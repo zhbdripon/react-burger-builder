@@ -1,12 +1,18 @@
-import React from 'react';
+import React, {Component} from 'react';
 import './App.css';
+import Layout from './components/Layout/Layout';
 
-function App() {
-  return (
-    <div>
-      <h1>Initialize Burger Builder</h1>
-    </div>
-  );
+class App extends Component{
+
+  render(){
+    return (
+      <div>
+        <Layout>
+          <h1>Initialize Burger Builder</h1>
+        </Layout>
+      </div>
+    );
+  }
 }
 
 export default App;
