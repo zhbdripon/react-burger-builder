@@ -1,8 +1,6 @@
 import React from 'react';
 import classes from './BuildControls.module.css'
 import BuildControl from './BuildControl/BuildControl'
-import Aux from '../../../hoc/Aux'
-import { string } from 'prop-types';
 
 const controls = [
     { label: 'Salad', type: 'salad' },
@@ -24,6 +22,12 @@ const buildControls = (props) =>{
                     disabled={props.disabledIngredients[ctrl.type]}
                 />
             ))}
+            <button 
+                className={classes.OrderButton}
+                disabled={!props.purchasable}
+            >
+                ORDER NOW
+            </button>
         </div>
     )
 }
