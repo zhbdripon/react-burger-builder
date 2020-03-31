@@ -67,6 +67,9 @@ class BurgerBuilder extends Component{
     purchaseCancelledHandler = () =>{
         this.setState({purchasing:false});
     }
+    purchaseContinuedHandler = () =>{
+        alert('You will be redict to checkout...')
+    }
  
     render(){
         const {ingredients,totalPrice} = this.state
@@ -78,7 +81,11 @@ class BurgerBuilder extends Component{
         return (
             <Aux>
                 <Modal show={this.state.purchasing} modelClosed={this.purchaseCancelledHandler}>
-                    <OrderSummary ingredients={ingredients} />
+                    <OrderSummary 
+                        ingredients={ingredients} 
+                        purchaseCancel={this.purchaseCancelledHandler}
+                        purchaseContinue={this.purchaseContinuedHandler}
+                    />
                 </Modal>
                 <Burger ingredients={ingredients}/>
                 <BuildControls 
