@@ -14,7 +14,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Your Name'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid : false,
+                touched: false
             },
             street: {
                 elementType: 'input',
@@ -22,7 +27,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Street'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true,
+                },
+                valid: false,
+                touched: false
             },
             zipCode: {
                 elementType: 'input',
@@ -30,7 +40,14 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'ZIP Code'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true,
+                    minLength: 4,
+                    maxLength: 6
+                },
+                valid: false,
+                touched: false
             },
             country: {
                 elementType: 'input',
@@ -38,7 +55,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Country'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             email: {
                 elementType: 'input',
@@ -46,7 +68,12 @@ class ContactData extends Component {
                     type: 'email',
                     placeholder: 'Email'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             deliveryMethod: {
                 elementType: 'select',
@@ -56,10 +83,26 @@ class ContactData extends Component {
                         { value: 'cheapest', displayValue: 'Cheapest' },
                     ]
                 },
-                value: ''
+                value: '',
+                valid: true,
+                touched: false
             }
         },
         loading:false
+    }
+
+    checkValidity(value,rules){
+        let valid = true;
+        if(rules.required){
+            valid = valid && value.trim() !== '';
+        }
+        if (rules.minLength) {
+            valid = valid && value.length >= rules.minLength
+        }
+        if (rules.maxLength) {
+            valid = valid && value.length <= rules.maxLength
+        }
+        return valid;
     }
 
     orderHandler = (event) =>{
@@ -71,8 +114,6 @@ class ContactData extends Component {
         for(let key in this.state.orderForm){
             formData[key] = this.state.orderForm[key].value;
         }
-
-
 
         const order = {
             ingredients: this.props.ingredients,
@@ -103,7 +144,10 @@ class ContactData extends Component {
             ...updatedOrderForm[id]
         }
         updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value,updatedFormElement.validation)
+        updatedFormElement.touched = true;
         updatedOrderForm[id] = updatedFormElement;
+        console.log(updatedFormElement)
         this.setState({orderForm:updatedOrderForm});
     }
 
@@ -126,6 +170,8 @@ class ContactData extends Component {
                             elementConfig={element.config.elementConfig}
                             value={element.config.value}
                             changed={(event)=>this.inputChangedHandler(event,element.id)}
+                            invalid={!element.config.valid}
+                            touched={element.config.touched}
                         />
                     )
                 )}
