@@ -96,8 +96,6 @@ class ContactData extends Component {
             })
         }
 
-        console.log(formElementArray.length)
-
         let form = (
             <form action="">
                 {formElementArray.map(element=>(
