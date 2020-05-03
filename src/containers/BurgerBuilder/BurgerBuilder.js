@@ -4,31 +4,20 @@ import Burger from '../../components/Burger/Burger'
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary'
-import axios from '../../axios-order'
 import Spinner from '../../components/UI/Spinner/Spinner'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
 import { connect } from 'react-redux'
 import * as actions from '../../store/actions/index'
+import axios from '../../axios-order'
 
 class BurgerBuilder extends Component{
 
     state = {
-        purchasable: false,
         purchasing: false,
-        loading: false
     }
 
     componentDidMount(){
-        // axios.get('/ingredients.json')
-        //     .then((response)=>{
-        //         this.setState({ingredients:response.data})
-        //     })
-        //     .catch((error)=>{
-
-        //     })
-        //     .finally(()=>{
-
-        //     })
+        this.props.onInitIngredients();
     }
 
     updatePurchaseState(ingredients){
@@ -59,36 +48,35 @@ class BurgerBuilder extends Component{
         for (let ingredient in disabledIngredients){
             disabledIngredients[ingredient] = disabledIngredients[ingredient]<1
         }
+        
+        let orderSummary = <Spinner />
+        let burger = this.props.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
 
-        let orderSummary = (
-            <OrderSummary
-                ingredients={this.props.indgs}
-                price={this.props.price}
-                purchaseCancel={this.purchaseCancelledHandler}
-                purchaseContinue={this.purchaseContinuedHandler}
-            />
-        )
-
-        let burger = (
-            <Aux>
-                <Burger ingredients={this.props.indgs} />
-                <BuildControls
-                    ingredientAdded={this.props.onIngredientAdd}
-                    ingredientRemoved={this.props.onIngredientRemove}
-                    disabledIngredients={disabledIngredients}
+        if (this.props.indgs) {
+            orderSummary = (
+                <OrderSummary
+                    ingredients={this.props.indgs}
                     price={this.props.price}
-                    purchasable={this.updatePurchaseState(this.props.indgs)}
-                    ordered={this.purchaseHandler}
+                    purchaseCancel={this.purchaseCancelledHandler}
+                    purchaseContinue={this.purchaseContinuedHandler}
                 />
-            </Aux>
-        )
-
-        if(!this.props.indgs){
-            burger = <Spinner/>
+            ) 
         }
-
-        if (this.state.loading || !this.props.indgs){
-            orderSummary = <Spinner/>
+        
+        if(this.props.indgs){
+            burger = (
+                <Aux>
+                    <Burger ingredients={this.props.indgs} />
+                    <BuildControls
+                        ingredientAdded={this.props.onIngredientAdd}
+                        ingredientRemoved={this.props.onIngredientRemove}
+                        disabledIngredients={disabledIngredients}
+                        price={this.props.price}
+                        purchasable={this.updatePurchaseState(this.props.indgs)}
+                        ordered={this.purchaseHandler}
+                    />
+                </Aux>
+            )
         }
 
         return (
@@ -105,14 +93,16 @@ class BurgerBuilder extends Component{
 const mapStateToProps = (state) =>{
     return {
         indgs: state.ingredients,
-        price: state.totalPrice
+        price: state.totalPrice,
+        error: state.error
     }
 }
 
 const mapDispatchToProps = (dispatch) =>{
     return {
         onIngredientAdd : (ingredient) => dispatch(actions.addIngredient(ingredient)),
-        onIngredientRemove : (ingredient) => dispatch(actions.removeIngredient(ingredient))
+        onIngredientRemove : (ingredient) => dispatch(actions.removeIngredient(ingredient)),
+        onInitIngredients : () => dispatch(actions.initIngredients())
     }
 }
 
