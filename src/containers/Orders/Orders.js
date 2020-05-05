@@ -1,10 +1,12 @@
 import React,{Component} from 'react';
 import Order from '../../components/Order/Order';
-import axios from '../../axios-order';
-import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
+import Spinner from '../../components/UI/Spinner/Spinner';
 
-import { connect } from 'react-redux'
-import * as actions from '../../store/actions/index'
+import axios from '../../axios-order';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/index';
 
 class Orders extends Component{
 
@@ -14,12 +16,17 @@ class Orders extends Component{
     
 
     render(){
-        const orders = this.props.orders.map(order=>{
-            return <Order 
-                        key={order.id}
-                        ingredients={order.ingredients}
-                        price={order.price}/>
-        })
+
+        let orders = <Spinner/>
+        if(!this.props.loading){
+            orders = this.props.orders.map(order=>{
+                return <Order 
+                            key={order.id}
+                            ingredients={order.ingredients}
+                            price={order.price}/>
+            })
+        }
+
         return (
             <div>
                 {orders}
@@ -30,7 +37,8 @@ class Orders extends Component{
 
 const mapStateToProps = (state) => {
     return {
-        orders: state.order.orders
+        orders: state.order.orders,
+        loading: state.order.loading
     }
 }
 
