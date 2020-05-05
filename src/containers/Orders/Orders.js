@@ -3,36 +3,18 @@ import Order from '../../components/Order/Order';
 import axios from '../../axios-order';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
 
+import { connect } from 'react-redux'
+import * as actions from '../../store/actions/index'
+
 class Orders extends Component{
 
-    state = {
-        orders: [],
-        loading: true
-    }
     componentDidMount() {
-        axios.get('/orders.json')
-            .then(response => {
-                const fetchedOrder = []
-                for(let key in response.data){
-                    fetchedOrder.push({
-                        id:key,
-                        ...response.data[key]
-                    })
-                }
-                this.setState({orders:fetchedOrder})
-            })
-            .catch(error=>{
-            
-            })
-            .finally(()=>{
-                this.setState({
-                    loading: false
-                })
-            })
+        this.props.onOrdersFetch()
     }
+    
 
     render(){
-        const orders = this.state.orders.map(order=>{
+        const orders = this.props.orders.map(order=>{
             return <Order 
                         key={order.id}
                         ingredients={order.ingredients}
@@ -46,5 +28,17 @@ class Orders extends Component{
     }
 }
 
-export default withErrorHandler(Orders,axios);
+const mapStateToProps = (state) => {
+    return {
+        orders: state.order.orders
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onOrdersFetch: ()=>{dispatch(actions.fetchOrders())}
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(Orders,axios));
 
