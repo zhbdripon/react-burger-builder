@@ -3,6 +3,7 @@ import Classes from './Auth.module.css'
 
 import Button from '../../components/UI/Button/Button';
 import Input from '../../components/UI/Input/Input';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
@@ -93,7 +94,7 @@ class Auth extends Component{
                 config: this.state.controls[key]
             })
         }
-        const form = formElementArray.map(element=>{
+        let form = formElementArray.map(element=>{
             return (
                 <Input
                     key={element.id}
@@ -106,6 +107,9 @@ class Auth extends Component{
                 />  
             )
         })
+
+        if(this.props.loading) form = <Spinner/>
+
         return (
             <div className={Classes.Auth}>
                 <form onSubmit={this.submitHandler}>
@@ -123,7 +127,7 @@ class Auth extends Component{
 
 const mapStateToProps = (state) =>{
     return {
-
+        loading: state.auth.loading
     }
 }
 
