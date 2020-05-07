@@ -4,9 +4,12 @@ import Classes from './Auth.module.css'
 import Button from '../../components/UI/Button/Button';
 import Input from '../../components/UI/Input/Input';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import BurgerBuilder from '../BurgerBuilder/BurgerBuilder';
 
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
+
+import { Redirect } from 'react-router-dom';
 
 class Auth extends Component{
 
@@ -115,9 +118,11 @@ class Auth extends Component{
                 <p>{this.props.error.message}</p>
             )
         }
-
+        const redirect = this.props.isAuthenticated? <Redirect to={BurgerBuilder}/>:null;
+            
         return (
             <div className={Classes.Auth}>
+                {redirect}
                 {errorMessage}
                 <form onSubmit={this.submitHandler}>
                     {form}
@@ -135,7 +140,8 @@ class Auth extends Component{
 const mapStateToProps = (state) =>{
     return {
         loading: state.auth.loading,
-        error: state.auth.error
+        error: state.auth.error,
+        isAuthenticated: state.auth.token !== null
     }
 }
 
