@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
 
 import { Redirect } from 'react-router-dom';
+import { updateObject } from '../../shared/utility';
 
 class Auth extends Component{
 
@@ -72,15 +73,13 @@ class Auth extends Component{
     }
 
     inputChangedHandler = (event, elementName) => {
-        const updatedControls = {
-            ...this.state.controls,
-            [elementName]:{
-                ...this.state.controls[elementName],
+        const updatedControls = updateObject(this.state.controls,{
+            [elementName] : updateObject(this.state.controls[elementName],{
                 value: event.target.value,
                 touched: true,
-                valid: this.checkValidity(event.target.value,this.state.controls[elementName].validation)
-            }
-        };
+                valid: this.checkValidity(event.target.value, this.state.controls[elementName].validation)
+            })
+        })
         this.setState({controls: updatedControls});
     }
 
