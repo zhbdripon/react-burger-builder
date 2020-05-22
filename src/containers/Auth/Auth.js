@@ -44,7 +44,9 @@ class Auth extends Component{
                 touched: false
             },
         },
-        isSignup: true
+        isSignup: true,
+        isValid: false,
+        showErrorMessage: false
     }
 
     componentDidMount() {
@@ -61,7 +63,15 @@ class Auth extends Component{
                 valid: checkValidity(event.target.value, this.state.controls[elementName].validation)
             })
         })
-        this.setState({controls: updatedControls});
+        let valid = true;
+        for (let key in updatedControls){
+            valid = valid && updatedControls[key].valid;
+        }
+        this.setState({
+            controls: updatedControls,
+            isValid: valid,
+            showErrorMessage:false
+        });
     }
 
     submitHandler = (event) =>{
@@ -69,11 +79,15 @@ class Auth extends Component{
         const email = this.state.controls.email.value;
         const password = this.state.controls.password.value;
         const isSignup = this.state.isSignup;
+        this.setState({ showErrorMessage:true});
         this.props.onAuth(email,password,isSignup);
     }
 
     switchAuthModeHandler = () =>{
-        this.setState({isSignup: !this.state.isSignup});
+        this.setState({
+            isSignup: !this.state.isSignup,
+            showErrorMessage: false
+        });
     }
 
     render(){
@@ -100,7 +114,7 @@ class Auth extends Component{
         if(this.props.loading) form = <Spinner/>
 
         let errorMessage = null;
-        if(this.props.error){
+        if (this.props.error && this.state.showErrorMessage){
             errorMessage = (
                 <p>{this.props.error.message}</p>
             )
@@ -110,10 +124,14 @@ class Auth extends Component{
         return (
             <div className={Classes.Auth}>
                 {redirect}
+                <h3>{this.state.isSignup ?'Create your Account':'Sign in'}</h3>
                 {errorMessage}
                 <form onSubmit={this.submitHandler}>
                     {form}
-                    <Button btnType="Success" >Submit</Button>
+                    <Button 
+                        btnType="Success" 
+                        disabled={!this.state.isValid} 
+                    >{this.state.isSignup ? 'SIGN UP' : 'SIGN IN'}</Button>
                 </form>
                 <Button 
                     clicked={this.switchAuthModeHandler}
